@@ -1,0 +1,118 @@
+// Producer-Consumer problem 
+// taking buffer size as 1
+
+import java.util.*;
+import java.lang.*;
+
+class company{
+    int n;
+    boolean flag=true;
+
+    synchronized void produceItem(int n)
+    {
+        if(!flag)
+        {
+                try { 
+                    wait(); 
+                } 
+                catch (Exception  e) { 
+                    e.printStackTrace(); 
+                } 
+        }
+        this.n=n;
+        flag=false;
+         System.out.println("producer "+ n);
+    }
+    
+    synchronized void consumeItem()
+    {
+        if(flag)
+        {
+                try { 
+                    wait(); 
+                } 
+                catch (Exception  e) { 
+                     System.out.println(e);
+                } 
+            
+        }
+         System.out.println("consumer "+ n);
+        flag=true;
+    }
+}
+
+class producer extends Thread{
+    company c;
+    producer(company c)
+    {
+        this.c=c; 
+    }
+     
+    public void run()
+    {
+        int i=1;
+        while(true)
+        {
+            c.produceItem(i);
+            
+            try{
+                Thread.sleep(1000);      
+            }
+            catch(Exception e)
+            {
+                System.out.println(e);
+
+            }
+            
+            i++;
+        }
+    }
+}
+
+
+class consumer extends Thread{
+    
+    company c;
+    
+    consumer(company c)
+    {
+        this.c=c;
+        
+    }
+    
+    
+    public void run()
+    {
+       
+        
+        while(true)
+        {
+            c.consumeItem();
+            try{
+             Thread.sleep(2000);
+                    
+            }
+            catch(Exception e)
+            {
+                
+            }
+        }
+    }
+    
+}
+
+
+
+public class Main {
+    public static void main(String args[]) {
+     
+     company co=new company();
+     
+     producer p=new producer(co);
+     consumer c=new consumer(co);
+     
+     p.start();
+     c.start();
+     
+    }
+}
